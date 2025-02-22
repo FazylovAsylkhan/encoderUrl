@@ -1,46 +1,38 @@
 package config
 
 import (
-	"errors"
-	"log"
-	"os"
+	"flag"
 	"sync"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Port string
+	Port    string
+	BaseURL string
 }
+
 var (
-	cfg Config
-	once   sync.Once
+	cfg  Config
+	once sync.Once
 )
 
-func Get() (*Config) {
+func Get() *Config {
 	once.Do(func() {
-		if err := godotenv.Load(); err != nil {
-			log.Fatal("error loading .env file")
+		port := flag.String("port", "8080", "Port to listen on for the web server")
+		isHttps := flag.String("https", "false", "Protocol of base url")
+		baseUrl := flag.String("redirect", "kuryltai.kz:8000", "Domen of base url")
+		flag.Parse()
+	
+		if *isHttps == "true" {
+			*baseUrl = "https://" + *baseUrl
+		} else {
+			*baseUrl = "http://" + *baseUrl
 		}
 	
-		err := initVariables()
-		if err != nil {
-			log.Fatalf("%v is not found in the environment", err)
+		cfg = Config{
+			Port:    *port,
+			BaseURL: *baseUrl,
 		}
 	})
 
 	return &cfg
-}
-
-func initVariables() error {
-	port, exists := os.LookupEnv("PORT")
-	if !exists {
-		return errors.New("PORT")
-	}
-
-	cfg = Config{
-		Port: port,
-	}
-
-	return nil
 }

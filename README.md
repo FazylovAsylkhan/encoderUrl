@@ -13,12 +13,6 @@
 Пример ответа от сервера:
 На любой некорректный запрос сервер должен возвращать ответ с кодом 400.
 
-Скопировать кодTEXT
-
-HTTP/1.1 307 Temporary Redirect
-Location: https://bcc.kz/ 
-
-
 Plain Text
 
 GET /EwHXdJfB HTTP/1.1

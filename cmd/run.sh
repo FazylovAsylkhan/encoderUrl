@@ -1,1 +1,1 @@
-go build && ./cmd
+go build && ./cmd -port=8080 -https=true -redirect=localhost:8000
