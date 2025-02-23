@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/FazylovAsylkhan/encoderUrl/cmd/server"
-	"github.com/FazylovAsylkhan/encoderUrl/config"
+	"github.com/FazylovAsylkhan/encoderUrl/internal/config"
 )
 
 func main() {
