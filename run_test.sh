@@ -1,0 +1,1 @@
+go test ./... -coverprofile=coverage.txt -covermode=set -v -tags testmode && go tool cover -html=coverage.txt -o index.html
