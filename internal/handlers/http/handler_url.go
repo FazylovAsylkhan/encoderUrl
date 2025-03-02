@@ -12,6 +12,11 @@ func (h handler) handlerUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if (r.Body == nil) {
+		http.Error(w, "Empty body", http.StatusBadRequest)
+		return
+	}
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)

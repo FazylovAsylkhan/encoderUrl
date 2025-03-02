@@ -61,15 +61,15 @@
 				
 				<option value="file2">github.com/FazylovAsylkhan/encoderUrl/internal/config/config.go (0.0%)</option>
 				
-				<option value="file3">github.com/FazylovAsylkhan/encoderUrl/internal/handlers/http/handler_hash.go (0.0%)</option>
+				<option value="file3">github.com/FazylovAsylkhan/encoderUrl/internal/handlers/http/handler_hash.go (83.3%)</option>
 				
-				<option value="file4">github.com/FazylovAsylkhan/encoderUrl/internal/handlers/http/handler_url.go (0.0%)</option>
+				<option value="file4">github.com/FazylovAsylkhan/encoderUrl/internal/handlers/http/handler_url.go (87.5%)</option>
 				
-				<option value="file5">github.com/FazylovAsylkhan/encoderUrl/internal/handlers/http/main.go (0.0%)</option>
+				<option value="file5">github.com/FazylovAsylkhan/encoderUrl/internal/handlers/http/main.go (100.0%)</option>
 				
-				<option value="file6">github.com/FazylovAsylkhan/encoderUrl/internal/logger/handler_logger.go (0.0%)</option>
+				<option value="file6">github.com/FazylovAsylkhan/encoderUrl/internal/logger/handler_logger.go (8.3%)</option>
 				
-				<option value="file7">github.com/FazylovAsylkhan/encoderUrl/internal/logger/main.go (0.0%)</option>
+				<option value="file7">github.com/FazylovAsylkhan/encoderUrl/internal/logger/main.go (87.5%)</option>
 				
 				<option value="file8">github.com/FazylovAsylkhan/encoderUrl/internal/logger/server_logger.go (0.0%)</option>
 				
@@ -82,8 +82,6 @@
 				<option value="file12">github.com/FazylovAsylkhan/encoderUrl/internal/usecase/encoderUrl/main.go (100.0%)</option>
 				
 				<option value="file13">github.com/FazylovAsylkhan/encoderUrl/pkg/handlerWrapper/main.go (0.0%)</option>
-				
-				<option value="file14">github.com/FazylovAsylkhan/encoderUrl/pkg/logger/server_logger.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -124,8 +122,9 @@ import (
 func Start(config *config.Config) <span class="cov0" title="0">{
         log := logger.New()
         log.SetFormatter(&amp;logger.ServerFormatter{})
+        router, _ := handler.Init(config)
         srv := &amp;http.Server{
-                Handler: handler.Init(config),
+                Handler: router,
                 Addr:    config.Address,
         }
         logger.StartingServer(log, config.Address, config.BaseURL)
@@ -181,22 +180,22 @@ func Get() *Config <span class="cov0" title="0">{
 
 import (
         "net/http"
-
-        "github.com/go-chi/chi/v5"
+        "strings"
 )
 
-func (h handler) handlerHash(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
-        if r.Method != http.MethodGet </span><span class="cov0" title="0">{
+func (h handler) handlerHash(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        if r.Method != http.MethodGet </span><span class="cov8" title="1">{
                 http.Error(w, "Only GET method is allowed", http.StatusBadRequest)
                 return
         }</span>
-        <span class="cov0" title="0">hash := chi.URLParam(r, "hash")
+        <span class="cov8" title="1">path := r.URL.Path
+        hash := strings.Split(path, "/")[1]
         url, err := h.encoderUrl.DecodeUrl(hash)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(w, err.Error(), http.StatusBadRequest)
                 return
         }</span>
-        <span class="cov0" title="0">result := h.cfg.BaseURL + "/"+ url
+        <span class="cov8" title="1">result := h.cfg.BaseURL + "/"+ url
         w.Header().Set("Location", result)        
         w.WriteHeader(http.StatusTemporaryRedirect)</span>
 }</pre>
@@ -209,18 +208,23 @@ import (
         "net/http"
 )
 
-func (h handler) handlerUrl(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
-        if r.Method != http.MethodPost </span><span class="cov0" title="0">{
+func (h handler) handlerUrl(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        if r.Method != http.MethodPost </span><span class="cov8" title="1">{
                 http.Error(w, "Only POST method is allowed", http.StatusBadRequest)
                 return
         }</span>
 
-        <span class="cov0" title="0">body, err := io.ReadAll(r.Body)
+        <span class="cov8" title="1">if (r.Body == nil) </span><span class="cov8" title="1">{
+                http.Error(w, "Empty body", http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov8" title="1">body, err := io.ReadAll(r.Body)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(w, "Failed to read request body", http.StatusBadRequest)
                 return
         }</span>
-        <span class="cov0" title="0">defer r.Body.Close()
+        <span class="cov8" title="1">defer r.Body.Close()
 
         shortURL := h.encoderUrl.EncodeURL(string(body))
         w.Header().Set("Content-Type", "text/plain")
@@ -248,10 +252,9 @@ type handler struct {
 
 
 
-var h handler
 
-func Init(cfg *config.Config) *chi.Mux <span class="cov0" title="0">{
-        h = handler{
+func Init(cfg *config.Config) (*chi.Mux, *handler) <span class="cov8" title="1">{
+        h := handler{
                 cfg: cfg,
                 encoderUrl: encoderUrl.Init(),
         }
@@ -268,14 +271,14 @@ func Init(cfg *config.Config) *chi.Mux <span class="cov0" title="0">{
 
         log := logger.New()
         log.SetFormatter(&amp;logger.HandlerFormatter{})
-        router.Use(func(next http.Handler) http.Handler </span><span class="cov0" title="0">{
+        router.Use(func(next http.Handler) http.Handler </span><span class="cov8" title="1">{
                 return logger.MiddlewareHandler(log, next)
         }</span>)
 
-        <span class="cov0" title="0">router.HandleFunc("/", h.handlerUrl)
+        <span class="cov8" title="1">router.HandleFunc("/", h.handlerUrl)
         router.HandleFunc("/{hash}", h.handlerHash)
 
-        return router</span>
+        return router, &amp;h</span>
 }
 </pre>
 		
@@ -292,7 +295,7 @@ import (
 
 type HandlerFormatter struct {}
 
-func MiddlewareHandler(log *logrus.Logger, next http.Handler) http.Handler <span class="cov0" title="0">{
+func MiddlewareHandler(log *logrus.Logger, next http.Handler) http.Handler <span class="cov8" title="1">{
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
                 start := time.Now()
 
@@ -355,19 +358,19 @@ import (
 )
 
 
-func New() *logrus.Logger <span class="cov0" title="0">{
+func New() *logrus.Logger <span class="cov8" title="1">{
     var log = logrus.New()
         log.SetLevel(logrus.InfoLevel)
         log.SetReportCaller(true)
         
     file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-    if err == nil </span><span class="cov0" title="0">{
+    if err == nil </span><span class="cov8" title="1">{
         log.SetOutput(io.MultiWriter(file, os.Stderr))
     }</span> else<span class="cov0" title="0"> {
         log.Info("Не удалось открыть файл логов, используется стандартный stderr")
     }</span>
 
-        <span class="cov0" title="0">return log</span>
+        <span class="cov8" title="1">return log</span>
 }
 </pre>
 		
@@ -524,40 +527,6 @@ func (rw *HandlerWrapper) HeadersString(headers map[string]string) string <span 
                 }
         }
         <span class="cov0" title="0">return str</span>
-}</pre>
-		
-		<pre class="file" id="file14" style="display: none">package logger
-
-import (
-        "fmt"
-
-        "github.com/sirupsen/logrus"
-)
-
-type ServerFormatter struct {
-        Timestamp string
-        Level     logrus.Level
-        Address   string
-        BaseURL   string
-        Message   string
-}
-
-func (f *ServerFormatter) Format(entry *logrus.Entry) ([]byte, error) <span class="cov0" title="0">{
-        timestamp := entry.Time.Format("2006-01-02T15:04:05.999-07:00")
-        return []byte(fmt.Sprintf("%s %s address=%s baseUrl=%s %s\n", 
-                timestamp, 
-                entry.Level, 
-                entry.Data["address"], 
-                entry.Data["baseUrl"], 
-                entry.Message, 
-        )), nil
-}</span>
-
-func StartingServer(log *logrus.Logger, address string, baseUrl string) <span class="cov0" title="0">{
-        log.WithFields(logrus.Fields{
-                "address": address,
-                "baseUrl": baseUrl,
-        }).Info("Server started")
 }</pre>
 		
 		</div>

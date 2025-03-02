@@ -12,8 +12,9 @@ import (
 func Start(config *config.Config) {
 	log := logger.New()
 	log.SetFormatter(&logger.ServerFormatter{})
+	router, _ := handler.Init(config)
 	srv := &http.Server{
-		Handler: handler.Init(config),
+		Handler: router,
 		Addr:    config.Address,
 	}
 	logger.StartingServer(log, config.Address, config.BaseURL)

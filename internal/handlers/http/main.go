@@ -17,10 +17,9 @@ type handler struct {
 
 
 
-var h handler
 
-func Init(cfg *config.Config) *chi.Mux {
-	h = handler{
+func Init(cfg *config.Config) (*chi.Mux, *handler) {
+	h := handler{
 		cfg: cfg,
 		encoderUrl: encoderUrl.Init(),
 	}
@@ -44,5 +43,5 @@ func Init(cfg *config.Config) *chi.Mux {
 	router.HandleFunc("/", h.handlerUrl)
 	router.HandleFunc("/{hash}", h.handlerHash)
 
-	return router
+	return router, &h
 }

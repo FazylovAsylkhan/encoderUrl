@@ -2,8 +2,7 @@ package handler
 
 import (
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
+	"strings"
 )
 
 func (h handler) handlerHash(w http.ResponseWriter, r *http.Request) {
@@ -11,7 +10,8 @@ func (h handler) handlerHash(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Only GET method is allowed", http.StatusBadRequest)
 		return
 	}
-	hash := chi.URLParam(r, "hash")
+	path := r.URL.Path
+	hash := strings.Split(path, "/")[1]
 	url, err := h.encoderUrl.DecodeUrl(hash)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
