@@ -11,13 +11,13 @@ import (
 
 func Start(config *config.Config) {
 	log := logger.New()
-	log.SetFormatter(&logger.ServerFormatter{})
+	log.SetFormatter(&logger.GeneralFormatter{})
 	router, _ := handler.Init(config)
 	srv := &http.Server{
 		Handler: router,
 		Addr:    config.Address,
 	}
-	logger.StartingServer(log, config.Address, config.BaseURL)
+	log.Infof("Server started at address %v with baseUrl %v ", config.Address, config.BaseURL)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}

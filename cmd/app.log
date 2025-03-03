@@ -2,3 +2,10 @@
 2025-03-02T10:03:55.773+05:00 info encoderUrl POST 201 uri=/ request=Headers: User-Agent: Thunder Client (https://www.thunderclient.com), Content-Type: text/plain, Content-Length: 8,  Body: profiles response=Headers: Content-Type: text/plain,  Body: https://localhost:8000/d9707283 duration=0s Request handled
 2025-03-02T10:04:00.033+05:00 info encoderUrl GET 307 uri=/d9707283 request=Headers: User-Agent: Thunder Client (https://www.thunderclient.com),  Body:  response=Headers: Location: https://localhost:8000/profiles,  Body:  duration=427.1µs Request handled
 2025-03-02T10:12:35.289+05:00 info address=localhost:8080 baseUrl=https://localhost:8000 Server started
+2025-03-03T11:19:58.718+05:00 info address=localhost:8080 baseUrl=https://localhost:8000 Server started
+2025-03-03T11:19:58.748+05:00 fatal address=%!s(<nil>) baseUrl=%!s(<nil>) Server failed to start: listen tcp 127.0.0.1:8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-03-03T11:27:36.27+05:00 info address=Server started at address localhost:8080 with baseUrl https://localhost:8000  baseUrl=%!s(MISSING) %!s(MISSING)
+2025-03-03T11:27:36.298+05:00 fatal address=Server failed to start: listen tcp 127.0.0.1:8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted. baseUrl=%!s(MISSING) %!s(MISSING)
+2025-03-03T11:28:13.366+05:00 info Server started at address localhost:8080 with baseUrl https://localhost:8000 
+2025-03-03T11:28:13.397+05:00 fatal Server failed to start: listen tcp 127.0.0.1:8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-03-03T11:28:59.594+05:00 info Server started at address localhost:8080 with baseUrl https://localhost:8000 

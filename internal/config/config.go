@@ -19,8 +19,8 @@ var (
 func Get() *Config {
 	once.Do(func() {
 		address := flag.String("address", "localhost:8080", "Address to listen on for the web server")
-		isHttps := flag.String("https", "false", "Protocol of base url")
-		baseUrl := flag.String("baseURL", "kuryltai.kz:8000", "Base url for redirect")
+		isHttps := flag.String("https", "true", "Protocol of base url")
+		baseUrl := flag.String("baseURL", "baspana.otbasybank.kz", "Base url for parsing")
 		flag.Parse()
 	
 		if *isHttps == "true" {
